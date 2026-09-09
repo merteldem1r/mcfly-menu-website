@@ -17,10 +17,7 @@ html, body {
   height: 100%;
   object-fit: contain;   /* swap to "cover" to crop instead of letterbox */
   background: #000;
-  opacity: 0;
-  transition: opacity var(--fade, 800ms) ease-in-out;
 }
-#stage video.active { opacity: 1; }
 
 /* Shown only if the browser refuses muted autoplay. Click anywhere to start. */
 #tap {
