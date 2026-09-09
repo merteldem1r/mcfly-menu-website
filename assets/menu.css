@@ -1,0 +1,37 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+#stage {
+  position: fixed;
+  inset: 0;
+  background: #000;
+}
+#stage video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* swap to "cover" to crop instead of letterbox */
+  background: #000;
+  opacity: 0;
+  transition: opacity var(--fade, 800ms) ease-in-out;
+}
+#stage video.active { opacity: 1; }
+
+/* Shown only if the browser refuses muted autoplay. Click anywhere to start. */
+#tap {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .85);
+  color: #fff;
+  font: 500 28px/1.4 -apple-system, system-ui, sans-serif;
+  cursor: pointer;
+  z-index: 10;
+}
