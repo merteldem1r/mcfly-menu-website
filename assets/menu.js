@@ -12,7 +12,7 @@
   var SOURCES = {
     1: "../../videos/screen-1/1.mp4",
     2: "../../videos/screen-2/2.mp4",
-    3: "../../videos/screen-3/menu-3.mp4"
+    3: "../../videos/screen-3/3.mp4"
   };
 
   var src = SOURCES[window.SCREEN];

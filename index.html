@@ -2,27 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>McFly Menu</title>
 <style>
-  body {
-    margin: 0; height: 100vh; background: #000; color: #fff;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 28px; font: 500 20px/1.4 -apple-system, system-ui, sans-serif;
+  :root {
+    --bg: #050505;
+    --fg: #ffffff;
+    --muted: rgba(255, 255, 255, .55);
+    --line: rgba(255, 255, 255, .16);
+    --line-hover: rgba(255, 255, 255, .55);
+    --accent: #ffb648;
+    --card: 132px;
   }
-  .row { display: flex; gap: 20px; }
-  a {
-    display: flex; align-items: center; justify-content: center;
-    width: 104px; height: 104px; border: 2px solid #fff; border-radius: 16px;
-    color: #fff; text-decoration: none; font-size: 44px;
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 500 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Ambient background: slow drifting glow + faint grid, purely decorative. */
+  .ambient {
+    position: fixed;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 38% at 32% 34%, rgba(255, 182, 72, .16), transparent 70%),
+      radial-gradient(34% 34% at 68% 66%, rgba(72, 148, 255, .13), transparent 70%);
+    filter: blur(20px);
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  .grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(58% 58% at 50% 50%, #000 20%, transparent 100%);
+            mask-image: radial-gradient(58% 58% at 50% 50%, #000 20%, transparent 100%);
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(-3%, -2%, 0) scale(1); }
+    to   { transform: translate3d(3%, 2%, 0) scale(1.12); }
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 24px;
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    animation: rise .7s cubic-bezier(.22, 1, .36, 1) both;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 16px 7px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: rgba(255, 255, 255, .03);
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(255, 182, 72, .55);
+    animation: pulse 2.4s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 182, 72, .5); }
+    70%  { box-shadow: 0 0 0 9px rgba(255, 182, 72, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 182, 72, 0); }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(26px, 4.4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -.02em;
+  }
+  .sub {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .row {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: var(--card);
+    height: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    color: var(--fg);
+    text-decoration: none;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .015));
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      transform .35s cubic-bezier(.22, 1, .36, 1),
+      border-color .35s ease,
+      box-shadow .35s ease;
+    animation: rise .7s cubic-bezier(.22, 1, .36, 1) both;
+  }
+
+  /* Staggered entrance */
+  .head        { animation-delay: .05s; }
+  .card:nth-child(1) { animation-delay: .18s; }
+  .card:nth-child(2) { animation-delay: .28s; }
+  .card:nth-child(3) { animation-delay: .38s; }
+  .hint        { animation: rise .7s cubic-bezier(.22, 1, .36, 1) .5s both; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .num {
+    font-size: 46px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -.03em;
+    transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+  }
+  .label {
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color .35s ease;
+  }
+
+  /* Sheen that sweeps across on hover */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .16) 50%, transparent 65%);
+    transform: translateX(-120%);
+    transition: transform .8s cubic-bezier(.22, 1, .36, 1);
+  }
+  /* Warm glow pooling from the bottom */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(80% 60% at 50% 118%, rgba(255, 182, 72, .38), transparent 70%);
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(-8px) scale(1.04);
+    border-color: var(--line-hover);
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, .55),
+      0 0 0 1px rgba(255, 255, 255, .05) inset;
+    outline: none;
+  }
+  .card:hover::before,
+  .card:focus-visible::before { transform: translateX(120%); }
+  .card:hover::after,
+  .card:focus-visible::after  { opacity: 1; }
+  .card:hover .num,
+  .card:focus-visible .num    { transform: translateY(-2px); }
+  .card:hover .label,
+  .card:focus-visible .label  { color: var(--fg); }
+
+  .card:focus-visible { box-shadow: 0 0 0 3px rgba(255, 182, 72, .55); }
+  .card:active { transform: translateY(-2px) scale(.99); }
+
+  .hint {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .3);
+  }
+
+  @media (max-width: 480px) {
+    :root { --card: 96px; }
+    .row { gap: 14px; }
+    .num { font-size: 34px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: .01ms !important;
+    }
   }
 </style>
 </head>
 <body>
-  <div style="opacity:.7">Pick a screen</div>
-  <div class="row">
-    <a href="menu/1/">1</a>
-    <a href="menu/2/">2</a>
-    <a href="menu/3/">3</a>
-  </div>
+  <div class="ambient"></div>
+  <div class="grid"></div>
+
+  <main>
+    <div class="head">
+      <span class="brand"><span class="dot"></span>McFly Menu</span>
+      <h1>Pick a screen</h1>
+      <p class="sub">Choose the display this device should run.</p>
+    </div>
+
+    <div class="row">
+      <a class="card" href="menu/1/"><span class="num">1</span><span class="label">Screen</span></a>
+      <a class="card" href="menu/2/"><span class="num">2</span><span class="label">Screen</span></a>
+      <a class="card" href="menu/3/"><span class="num">3</span><span class="label">Screen</span></a>
+    </div>
+
+    <p class="hint">Playback starts automatically</p>
+  </main>
 </body>
 </html>
