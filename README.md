@@ -58,6 +58,20 @@ After editing `3.mp4` or `4.mp4`, regenerate the combined clip:
 Timing lives at the top of that script (`HOLD`, the pause on each menu, and
 `FADE`, the fade to black between them).
 
+## Encoding new videos — keep them 1080p
+
+TV browsers drop 4K H.264 playback every so often (the screen falls back to
+"Tap to start the menu"). Before committing a new clip, encode it with:
+
+```
+ffmpeg -i in.mp4 -vf "scale=1920:1080,fps=30,format=yuv420p" \
+  -c:v libx264 -profile:v high -level 4.1 -crf 20 -movflags +faststart -an out.mp4
+```
+
+The player also heals itself: stalls and errors are retried, then the clip is
+re-fetched, then (if online) the page reloads. The tap overlay only appears
+when the browser truly blocks autoplay.
+
 ## Tweaking
 
 - `SOURCES` at the top of `assets/menu.js` maps each screen to its video.
